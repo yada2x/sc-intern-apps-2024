@@ -1,6 +1,8 @@
 package folder
 
 import (
+	"errors"
+
 	"github.com/gofrs/uuid"
 
 	"strings"
@@ -24,11 +26,11 @@ func (f *driver) GetFoldersByOrgID(orgID uuid.UUID) []Folder {
 
 }
 
-func (f *driver) GetAllChildFolders(orgID uuid.UUID, name string) []Folder {
+func (f *driver) GetAllChildFolders(orgID uuid.UUID, name string) ([]Folder, error) {
 	folders := f.GetFoldersByOrgID(orgID)
 
 	if len(folders) == 0 { // Empty case: return nil if folder is empty
-		return nil
+		return nil, errors.New("provided orgID has no folders")
 	}
 
 	// Find the desired folder
@@ -42,7 +44,7 @@ func (f *driver) GetAllChildFolders(orgID uuid.UUID, name string) []Folder {
 
 	// Not found case: return nil if folder is not found (maybe throw an error?)
 	if path == "" {
-		return nil
+		return nil, errors.New("folder not found")
 	}
 
 	// Iterate through all folders, if they have path as a prefix, they are a child, append them
@@ -53,5 +55,5 @@ func (f *driver) GetAllChildFolders(orgID uuid.UUID, name string) []Folder {
 			children = append(children, folder)
 		}
 	}
-	return children
+	return children, nil
 }
