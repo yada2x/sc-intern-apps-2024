@@ -175,8 +175,8 @@ func Test_folder_GetAllChildFolders_Error(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.testName, func(t *testing.T) {
 			f := folder.NewDriver(tt.folders)
-			get, _ := f.GetAllChildFolders(tt.orgID, tt.parent)
-			assert.Equal(t, tt.want, get)
+			_, err := f.GetAllChildFolders(tt.orgID, tt.parent)
+			assert.Equal(t, tt.want, err != nil)
 		})
 	}
 }
