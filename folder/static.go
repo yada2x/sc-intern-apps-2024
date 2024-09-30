@@ -39,16 +39,16 @@ func GenerateData() []Folder {
 	rng, _ := codename.DefaultRNG()
 	tree := []Folder{}
 
-	for i := 0; i < MaxRootSet; i++ {
+	for i := 0; i < MaxRootSet; i++ { // number of root folders
 		orgId := uuid.FromStringOrNil(DefaultOrgID)
-		if i%3 == 0 {
+		if i%3 == 0 { // every third root folder has a diff ordID?
 			orgId = uuid.Must(uuid.NewV4())
 		}
 
 		name := codename.Generate(rng, 0)
 
-		subtree := make(chan []Folder)
-		go func() {
+		subtree := make(chan []Folder) // go concurrency channel
+		go func() { // goroutine that does stuff in parallel?
 			subtree <- generateTree(1, []Folder{
 				{
 					Name:  name,
@@ -57,7 +57,7 @@ func GenerateData() []Folder {
 				},
 			})
 		}()
-		tree = append(tree, <-subtree...)
+		tree = append(tree, <-subtree...) // add subtree to result
 	}
 
 	return tree
@@ -66,16 +66,16 @@ func GenerateData() []Folder {
 func generateTree(depth int, tree []Folder) []Folder {
 	rng, _ := codename.DefaultRNG()
 
-	if depth >= MaxDepth {
+	if depth >= MaxDepth { // base case
 		return tree
 	}
 
-	for _, t := range tree {
+	for _, t := range tree { // for each folder of previous level
 		numOfChild := rng.Int()%MaxChild + 1
 		for i := 0; i < numOfChild; i++ {
 			name := codename.Generate(rng, 0)
 
-			childTree := make(chan []Folder)
+			childTree := make(chan []Folder) // recursively generate subtrees
 			go func() {
 				childTree <- generateTree(depth+1, []Folder{
 					{

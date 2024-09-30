@@ -1,6 +1,10 @@
 package folder
 
-import "github.com/gofrs/uuid"
+import (
+	"github.com/gofrs/uuid"
+
+	"strings"
+)
 
 func GetAllFolders() []Folder {
 	return GetSampleData()
@@ -21,7 +25,29 @@ func (f *driver) GetFoldersByOrgID(orgID uuid.UUID) []Folder {
 }
 
 func (f *driver) GetAllChildFolders(orgID uuid.UUID, name string) []Folder {
-	// Your code here...
+	folders := f.GetFoldersByOrgID(orgID)
 
-	return []Folder{}
+	// Find the desired folder
+	var path string
+	for _, folder := range folders {
+		if folder.Name == name {
+			path = folder.Paths
+			break
+		}
+	}
+
+	// Empty case: return nil if folder is not found (maybe throw an error?)
+	if path == "" {
+		return nil
+	}
+
+	// Iterate through all folders, if they have path as a prefix, they are a child, append them
+	// O(n^2) here, maybe try preprocessing all data into like a trie or smth
+	children := []Folder{}
+	for _, folder := range folders {
+		if strings.HasPrefix(folder.Paths, path + ".") && folder.Name != name {
+			children = append(children, folder)
+		}
+	}
+	return children
 }
