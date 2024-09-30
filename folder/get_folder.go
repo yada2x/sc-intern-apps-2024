@@ -27,6 +27,10 @@ func (f *driver) GetFoldersByOrgID(orgID uuid.UUID) []Folder {
 func (f *driver) GetAllChildFolders(orgID uuid.UUID, name string) []Folder {
 	folders := f.GetFoldersByOrgID(orgID)
 
+	if len(folders) == 0 { // Empty case: return nil if folder is empty
+		return nil
+	}
+
 	// Find the desired folder
 	var path string
 	for _, folder := range folders {
@@ -36,7 +40,7 @@ func (f *driver) GetAllChildFolders(orgID uuid.UUID, name string) []Folder {
 		}
 	}
 
-	// Empty case: return nil if folder is not found (maybe throw an error?)
+	// Not found case: return nil if folder is not found (maybe throw an error?)
 	if path == "" {
 		return nil
 	}
