@@ -8,20 +8,19 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// feel free to change how the unit test is structured
 func Test_folder_GetFoldersByOrgID(t *testing.T) {
 	t.Parallel()
 
-	defaultOrdID := uuid.FromStringOrNil(folder.DefaultOrgID)
-	secondaryOrdID := uuid.Must(uuid.NewV4())
+	defaultOrgID := uuid.FromStringOrNil(folder.DefaultOrgID)
+	secondaryOrgID := uuid.Must(uuid.NewV4())
 
 	example1 := []folder.Folder{
-		{ Name: "alpha", Paths: "alpha", OrgId: defaultOrdID },
-		{ Name: "bravo", Paths: "alpha.bravo", OrgId: defaultOrdID },
-		{ Name: "charlie", Paths : "alpha.bravo.charlie", OrgId: defaultOrdID },
-		{ Name: "delta", Paths: "alpha.delta", OrgId: defaultOrdID },
-		{ Name: "echo", Paths: "echo", OrgId: defaultOrdID },
-		{ Name: "foxtrot", Paths: "foxtrot", OrgId: secondaryOrdID},
+		{ Name: "alpha", Paths: "alpha", OrgId: defaultOrgID },
+		{ Name: "bravo", Paths: "alpha.bravo", OrgId: defaultOrgID },
+		{ Name: "charlie", Paths : "alpha.bravo.charlie", OrgId: defaultOrgID },
+		{ Name: "delta", Paths: "alpha.delta", OrgId: defaultOrgID },
+		{ Name: "echo", Paths: "echo", OrgId: defaultOrgID },
+		{ Name: "foxtrot", Paths: "foxtrot", OrgId: secondaryOrgID },
 	}
 
 	tests := [...]struct {
@@ -32,37 +31,37 @@ func Test_folder_GetFoldersByOrgID(t *testing.T) {
 	}{
 		{
 			name: "Empty folder",
-			orgID: defaultOrdID,
+			orgID: defaultOrgID,
 			folders: []folder.Folder{},
 			want: []folder.Folder{},
 		},
 		{
 			name: "One folder",
-			orgID: defaultOrdID,
+			orgID: defaultOrgID,
 			folders: []folder.Folder{
-				{ Name: "alpha", OrgId: defaultOrdID, Paths: "alpha" },
+				{ Name: "alpha", OrgId: defaultOrgID, Paths: "alpha" },
 			},
 			want: []folder.Folder{
-				{ Name: "alpha", OrgId: defaultOrdID, Paths: "alpha" },
+				{ Name: "alpha", OrgId: defaultOrgID, Paths: "alpha" },
 			},
 		},
 		{
 			name: "Many folders",
-			orgID: defaultOrdID,
+			orgID: defaultOrgID,
 			folders: example1,
 			want: []folder.Folder{
-				{ Name: "alpha", Paths: "alpha", OrgId: defaultOrdID },
-				{ Name: "bravo", Paths: "alpha.bravo", OrgId: defaultOrdID },
-				{ Name: "charlie", Paths : "alpha.bravo.charlie", OrgId: defaultOrdID },
-				{ Name: "delta", Paths: "alpha.delta", OrgId: defaultOrdID },
-				{ Name: "echo", Paths: "echo", OrgId: defaultOrdID },
+				{ Name: "alpha", Paths: "alpha", OrgId: defaultOrgID },
+				{ Name: "bravo", Paths: "alpha.bravo", OrgId: defaultOrgID },
+				{ Name: "charlie", Paths : "alpha.bravo.charlie", OrgId: defaultOrgID },
+				{ Name: "delta", Paths: "alpha.delta", OrgId: defaultOrgID },
+				{ Name: "echo", Paths: "echo", OrgId: defaultOrgID },
 			},
 		},
 		{
 			name: "No folders in desired organisation",
-			orgID: defaultOrdID,
+			orgID: defaultOrgID,
 			folders: []folder.Folder{
-				{ Name: "alpha", OrgId: secondaryOrdID, Paths: "alpha" },
+				{ Name: "alpha", OrgId: secondaryOrgID, Paths: "alpha" },
 			},
 			want: []folder.Folder{},
 		},
@@ -79,16 +78,16 @@ func Test_folder_GetFoldersByOrgID(t *testing.T) {
 func Test_folder_GetAllChildFolders(t *testing.T) {
 	t.Parallel()
 
-	defaultOrdID := uuid.FromStringOrNil(folder.DefaultOrgID)
-	secondaryOrdID := uuid.Must(uuid.NewV4())
+	defaultOrgID := uuid.FromStringOrNil(folder.DefaultOrgID)
+	secondaryOrgID := uuid.Must(uuid.NewV4())
 
 	example1 := []folder.Folder{
-		{ Name: "alpha", Paths: "alpha", OrgId: defaultOrdID },
-		{ Name: "bravo", Paths: "alpha.bravo", OrgId: defaultOrdID },
-		{ Name: "charlie", Paths : "alpha.bravo.charlie", OrgId: defaultOrdID },
-		{ Name: "delta", Paths: "alpha.delta", OrgId: defaultOrdID },
-		{ Name: "echo", Paths: "echo", OrgId: defaultOrdID },
-		{ Name: "foxtrot", Paths: "foxtrot", OrgId: secondaryOrdID},
+		{ Name: "alpha", Paths: "alpha", OrgId: defaultOrgID },
+		{ Name: "bravo", Paths: "alpha.bravo", OrgId: defaultOrgID },
+		{ Name: "charlie", Paths : "alpha.bravo.charlie", OrgId: defaultOrgID },
+		{ Name: "delta", Paths: "alpha.delta", OrgId: defaultOrgID },
+		{ Name: "echo", Paths: "echo", OrgId: defaultOrgID },
+		{ Name: "foxtrot", Paths: "foxtrot", OrgId: secondaryOrgID },
 	}
 
 	tests := [...]struct {
@@ -99,49 +98,89 @@ func Test_folder_GetAllChildFolders(t *testing.T) {
 		want    []folder.Folder
 	}{
 		{
-			testName: "One folder",
+			testName: "Single folder",
 			parent: "alpha",
-			orgID: defaultOrdID,
+			orgID: defaultOrgID,
 			folders: []folder.Folder{
-				{Name: "alpha", OrgId: defaultOrdID, Paths: "alpha"},
-				{Name: "beta", OrgId: defaultOrdID, Paths: "alpha.beta"},
+				{ Name: "alpha", Paths: "alpha", OrgId: defaultOrgID },
 			},
 			want: []folder.Folder{
-				{Name: "beta", OrgId: defaultOrdID, Paths: "alpha.beta"},
 			},
 		},
 		{
-			testName: "Get children from root folder",
+			testName: "Same folder name, different organisation",
 			parent: "alpha",
-			orgID: defaultOrdID,
-			folders: example1,
+			orgID: defaultOrgID,
+			folders: []folder.Folder{
+				{ Name: "alpha", Paths: "alpha", OrgId: defaultOrgID },
+				{ Name: "beta", Paths: "alpha.beta", OrgId: defaultOrgID },
+				{ Name: "alpha", Paths: "alpha", OrgId: secondaryOrgID },
+				{ Name: "echo", Paths: "alpha.echo", OrgId: secondaryOrgID },
+			},
 			want: []folder.Folder{
-				{ Name: "bravo", Paths: "alpha.bravo", OrgId: defaultOrdID },
-				{ Name: "charlie", Paths : "alpha.bravo.charlie", OrgId: defaultOrdID },
-				{ Name: "delta", Paths: "alpha.delta", OrgId: defaultOrdID },
+				{ Name: "beta", Paths: "alpha.beta", OrgId: defaultOrgID },
 			},
 		},
 		{
-			testName: "Get children from inner folder",
+			testName: "Similar root folder names",
+			parent: "alpha",
+			orgID: defaultOrgID,
+			folders: []folder.Folder{
+				{ Name: "alpha", Paths: "alpha", OrgId: defaultOrgID },
+				{ Name: "beta", Paths: "alpha.beta", OrgId: defaultOrgID },
+				{ Name: "alphaa", Paths: "alphaa", OrgId: defaultOrgID },
+				{ Name: "echo", Paths: "alphaa.echo", OrgId: defaultOrgID },
+			},
+			want: []folder.Folder{
+				{ Name: "beta", Paths: "alpha.beta", OrgId: defaultOrgID },
+			},
+		},
+		{
+			testName: "Similar child folder names",
+			parent: "alpha",
+			orgID: defaultOrgID,
+			folders: []folder.Folder{
+				{ Name: "alpha", Paths: "alpha", OrgId: defaultOrgID },
+				{ Name: "beta", Paths: "alpha.beta", OrgId: defaultOrgID },
+				{ Name: "betaa", Paths: "alpha.betaa", OrgId: defaultOrgID },
+			},
+			want: []folder.Folder{
+				{ Name: "beta", Paths: "alpha.beta", OrgId: defaultOrgID },
+				{ Name: "betaa", Paths: "alpha.betaa", OrgId: defaultOrgID },
+			},
+		},
+		{
+			testName: "Example 1: Get children from root folder",
+			parent: "alpha",
+			orgID: defaultOrgID,
+			folders: example1,
+			want: []folder.Folder{
+				{ Name: "bravo", Paths: "alpha.bravo", OrgId: defaultOrgID },
+				{ Name: "charlie", Paths : "alpha.bravo.charlie", OrgId: defaultOrgID },
+				{ Name: "delta", Paths: "alpha.delta", OrgId: defaultOrgID },
+			},
+		},
+		{
+			testName: "Example 2: Get children from inner folder",
 			parent: "bravo",
-			orgID: defaultOrdID,
+			orgID: defaultOrgID,
 			folders: example1,
 			want: []folder.Folder{
-				{ Name: "charlie", Paths : "alpha.bravo.charlie", OrgId: defaultOrdID },
+				{ Name: "charlie", Paths : "alpha.bravo.charlie", OrgId: defaultOrgID },
 			},
 		},
 		{
-			testName: "Get children from leaf folder",
+			testName: "Example 3: Get children from leaf folder",
 			parent: "charlie",
-			orgID: defaultOrdID,
+			orgID: defaultOrgID,
 			folders: example1,
 			want: []folder.Folder{
 			},
 		},
 		{
-			testName: "Get children from root folder with no children",
+			testName: "Example 4: Get children from folder with no children",
 			parent: "echo",
-			orgID: defaultOrdID,
+			orgID: defaultOrgID,
 			folders: example1,
 			want: []folder.Folder{
 			},
@@ -159,16 +198,16 @@ func Test_folder_GetAllChildFolders(t *testing.T) {
 func Test_folder_GetAllChildFolders_Error(t *testing.T) {
 	t.Parallel()
 
-	defaultOrdID := uuid.FromStringOrNil(folder.DefaultOrgID)
-	secondaryOrdID := uuid.Must(uuid.NewV4())
+	defaultOrgID := uuid.FromStringOrNil(folder.DefaultOrgID)
+	secondaryOrgID := uuid.Must(uuid.NewV4())
 
 	example1 := []folder.Folder{
-		{ Name: "alpha", Paths: "alpha", OrgId: defaultOrdID },
-		{ Name: "bravo", Paths: "alpha.bravo", OrgId: defaultOrdID },
-		{ Name: "charlie", Paths : "alpha.bravo.charlie", OrgId: defaultOrdID },
-		{ Name: "delta", Paths: "alpha.delta", OrgId: defaultOrdID },
-		{ Name: "echo", Paths: "echo", OrgId: defaultOrdID },
-		{ Name: "foxtrot", Paths: "foxtrot", OrgId: secondaryOrdID},
+		{ Name: "alpha", Paths: "alpha", OrgId: defaultOrgID },
+		{ Name: "bravo", Paths: "alpha.bravo", OrgId: defaultOrgID },
+		{ Name: "charlie", Paths : "alpha.bravo.charlie", OrgId: defaultOrgID },
+		{ Name: "delta", Paths: "alpha.delta", OrgId: defaultOrgID },
+		{ Name: "echo", Paths: "echo", OrgId: defaultOrgID },
+		{ Name: "foxtrot", Paths: "foxtrot", OrgId: secondaryOrgID},
 	}
 
 	tests := [...]struct {
@@ -179,16 +218,24 @@ func Test_folder_GetAllChildFolders_Error(t *testing.T) {
 		want    bool
 	}{
 		{
-			testName: "Folder does not exist",
-			parent: "idonotexist",
-			orgID: defaultOrdID,
+			testName: "Empty list",
+			parent: "alpha",
+			orgID: defaultOrgID,
+			folders: []folder.Folder{
+			},
+			want: true,
+		},
+		{
+			testName: "Example 5: Folder does not exist",
+			parent: "invalid_folder",
+			orgID: defaultOrgID,
 			folders: example1,
 			want: true,
 		},
 		{
-			testName: "Folder does not exist in specified organisation",
+			testName: "Example 6: Folder does not exist in specified organisation",
 			parent: "foxtrot",
-			orgID: defaultOrdID,
+			orgID: defaultOrgID,
 			folders: example1,
 			want: true,
 		},
