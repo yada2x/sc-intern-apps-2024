@@ -8,6 +8,7 @@ import (
 	"strings"
 )
 
+// do i rlly need tests for this?
 func GetAllFolders() []Folder {
 	return GetSampleData()
 }
@@ -42,7 +43,7 @@ func (f *driver) GetAllChildFolders(orgID uuid.UUID, name string) ([]Folder, err
 		}
 	}
 
-	// Not found case: return nil if folder is not found (maybe throw an error?)
+	// Not found case: return nil if folder is not found
 	if path == "" {
 		return nil, errors.New("folder not found")
 	}

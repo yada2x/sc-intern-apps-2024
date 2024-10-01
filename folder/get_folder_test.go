@@ -15,6 +15,15 @@ func Test_folder_GetFoldersByOrgID(t *testing.T) {
 	defaultOrdID := uuid.FromStringOrNil(folder.DefaultOrgID)
 	secondaryOrdID := uuid.Must(uuid.NewV4())
 
+	example1 := []folder.Folder{
+		{ Name: "alpha", Paths: "alpha", OrgId: defaultOrdID },
+		{ Name: "bravo", Paths: "alpha.bravo", OrgId: defaultOrdID },
+		{ Name: "charlie", Paths : "alpha.bravo.charlie", OrgId: defaultOrdID },
+		{ Name: "delta", Paths: "alpha.delta", OrgId: defaultOrdID },
+		{ Name: "echo", Paths: "echo", OrgId: defaultOrdID },
+		{ Name: "foxtrot", Paths: "foxtrot", OrgId: secondaryOrdID},
+	}
+
 	tests := [...]struct {
 		name    string
 		orgID   uuid.UUID
@@ -35,6 +44,18 @@ func Test_folder_GetFoldersByOrgID(t *testing.T) {
 			},
 			want: []folder.Folder{
 				{ Name: "alpha", OrgId: defaultOrdID, Paths: "alpha" },
+			},
+		},
+		{
+			name: "Many folders",
+			orgID: defaultOrdID,
+			folders: example1,
+			want: []folder.Folder{
+				{ Name: "alpha", Paths: "alpha", OrgId: defaultOrdID },
+				{ Name: "bravo", Paths: "alpha.bravo", OrgId: defaultOrdID },
+				{ Name: "charlie", Paths : "alpha.bravo.charlie", OrgId: defaultOrdID },
+				{ Name: "delta", Paths: "alpha.delta", OrgId: defaultOrdID },
+				{ Name: "echo", Paths: "echo", OrgId: defaultOrdID },
 			},
 		},
 		{
@@ -101,7 +122,7 @@ func Test_folder_GetAllChildFolders(t *testing.T) {
 			},
 		},
 		{
-			testName: "Get children from subtree",
+			testName: "Get children from inner folder",
 			parent: "bravo",
 			orgID: defaultOrdID,
 			folders: example1,
