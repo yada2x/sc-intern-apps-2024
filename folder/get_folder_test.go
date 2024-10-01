@@ -46,7 +46,7 @@ func Test_folder_GetFoldersByOrgID(t *testing.T) {
 			},
 		},
 		{
-			name: "Many folders",
+			name: "Multiple folders",
 			orgID: defaultOrgID,
 			folders: example1,
 			want: []folder.Folder{
@@ -55,6 +55,19 @@ func Test_folder_GetFoldersByOrgID(t *testing.T) {
 				{ Name: "charlie", Paths : "alpha.bravo.charlie", OrgId: defaultOrgID },
 				{ Name: "delta", Paths: "alpha.delta", OrgId: defaultOrgID },
 				{ Name: "echo", Paths: "echo", OrgId: defaultOrgID },
+			},
+		},
+		{
+			name: "Folders from different organisations",
+			orgID: secondaryOrgID,
+			folders: []folder.Folder{
+				{ Name: "alpha", Paths: "alpha", OrgId: defaultOrgID },
+				{ Name: "bravo", Paths: "alpha.bravo", OrgId: defaultOrgID },
+				{ Name: "charlie", Paths : "alpha.bravo.charlie", OrgId: defaultOrgID },
+				{ Name: "delta", Paths: "alpha.delta", OrgId: defaultOrgID },
+				{ Name: "echo", Paths: "echo", OrgId: defaultOrgID },
+			},
+			want: []folder.Folder{
 			},
 		},
 		{

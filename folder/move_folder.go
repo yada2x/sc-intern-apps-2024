@@ -7,10 +7,7 @@ import (
 )
 
 func (f *driver) MoveFolder(name string, dst string) ([]Folder, error) {
-	if len(f.folders) == 0 {
-		return nil, errors.New("provided folder is empty")
-	}
-
+	// Get indices of folders of interest
 	start, dest, err := f.getFolderIndices(name, dst)
 	if (err != nil) {
 		return nil, err
@@ -19,22 +16,24 @@ func (f *driver) MoveFolder(name string, dst string) ([]Folder, error) {
 	nodeToMove := f.folders[start]
 	destination := f.folders[dest]
 
+	// Handle cases where folders are in different organisations or where one is a child of the other
 	if nodeToMove.OrgId != destination.OrgId {
 		return nil, errors.New("cannot move a folder to a different organisation")
 	} else if strings.HasPrefix(destination.Paths, nodeToMove.Paths + ".") {
 		return nil, errors.New("cannot move folder to a child of itself")
 	}
 
+	// Update child nodes with new paths
 	newPath := destination.Paths + "." + nodeToMove.Name
 	oldPath := nodeToMove.Paths + "."
 	f.folders[start].Paths = newPath
-	
 	f.updateFolderPaths(oldPath, newPath)
 
 	return f.folders, nil
 }
 
 func (f* driver) getFolderIndices(name string, dst string) (int, int, error) {
+	// Try to find corresponding folders and get their indices
 	start := -1
 	dest := 1
 	for i := range f.folders {
@@ -45,6 +44,7 @@ func (f* driver) getFolderIndices(name string, dst string) (int, int, error) {
 		}
 	}
 
+	// Handle errors for non-existent folders or moving a folder to itself
 	if start == -1 {
 		return -1, -1, errors.New("source folder does not exist")
 	} else if dest == -1 {
@@ -57,6 +57,7 @@ func (f* driver) getFolderIndices(name string, dst string) (int, int, error) {
 }
 
 func (f* driver) updateFolderPaths(oldPath string, newPath string) {
+	// For each child part of an input path, change their path to a new path
 	for i := range f.folders {
 		if strings.HasPrefix(f.folders[i].Paths, oldPath) {
 			leftover := strings.TrimPrefix(f.folders[i].Paths, oldPath)

@@ -33,7 +33,7 @@ func Test_folder_MoveFolder(t *testing.T) {
 		want    []folder.Folder
 	}{
 		{
-			testName: "Example 1",
+			testName: "Example 1: Move inner folder to another inner folder",
 			start: "bravo",
 			destination: "delta",
 			orgID: defaultOrdID,
@@ -49,7 +49,7 @@ func Test_folder_MoveFolder(t *testing.T) {
 			},
 		},
 		{
-			testName: "Example 2",
+			testName: "Example 2: Move inner folder to folder with no children",
 			start: "bravo",
 			destination: "golf",
 			orgID: defaultOrdID,
@@ -100,7 +100,7 @@ func Test_folder_MoveFolder_Error(t *testing.T) {
 		want    bool
 	}{
 		{
-			testName: "Example 1",
+			testName: "Example 1: Move folder to a child of itself",
 			start: "bravo",
 			destination: "charlie",
 			orgID: defaultOrdID,
@@ -108,7 +108,7 @@ func Test_folder_MoveFolder_Error(t *testing.T) {
 			want: true,
 		},
 		{
-			testName: "Example 2",
+			testName: "Example 2: Move a folder to itself",
 			start: "bravo",
 			destination: "bravo",
 			orgID: defaultOrdID,
@@ -116,7 +116,7 @@ func Test_folder_MoveFolder_Error(t *testing.T) {
 			want: true,
 		},
 		{
-			testName: "Example 3",
+			testName: "Example 3: Move a folder to a different organisation",
 			start: "bravo",
 			destination: "foxtrot",
 			orgID: defaultOrdID,
@@ -124,7 +124,7 @@ func Test_folder_MoveFolder_Error(t *testing.T) {
 			want: true,
 		},
 		{
-			testName: "Example 4",
+			testName: "Example 4: Source folder does not exist",
 			start: "invalid_folder",
 			destination: "delta",
 			orgID: defaultOrdID,
@@ -132,7 +132,7 @@ func Test_folder_MoveFolder_Error(t *testing.T) {
 			want: true,
 		},
 		{
-			testName: "Example 5",
+			testName: "Example 5: Destination folder does not exist",
 			start: "bravo",
 			destination: "invalid_folder",
 			orgID: defaultOrdID,
