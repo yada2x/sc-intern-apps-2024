@@ -6,10 +6,14 @@ import (
 	"strings"
 )
 
+// Move a source folder and its children into another folder
+// Input: source folder name, destination folder name
+// Output: slice of folders, IO errors
+// Errors: Moving folders to a different organisation, moving a folder to its child
 func (f *driver) MoveFolder(name string, dst string) ([]Folder, error) {
 	// Get indices of folders of interest
 	start, dest, err := f.getFolderIndices(name, dst)
-	if (err != nil) {
+	if err != nil {
 		return nil, err
 	}
 
@@ -19,7 +23,7 @@ func (f *driver) MoveFolder(name string, dst string) ([]Folder, error) {
 	// Handle cases where folders are in different organisations or where one is a child of the other
 	if nodeToMove.OrgId != destination.OrgId {
 		return nil, errors.New("cannot move a folder to a different organisation")
-	} else if strings.HasPrefix(destination.Paths, nodeToMove.Paths + ".") {
+	} else if strings.HasPrefix(destination.Paths, nodeToMove.Paths+".") {
 		return nil, errors.New("cannot move folder to a child of itself")
 	}
 
@@ -32,14 +36,19 @@ func (f *driver) MoveFolder(name string, dst string) ([]Folder, error) {
 	return f.folders, nil
 }
 
-func (f* driver) getFolderIndices(name string, dst string) (int, int, error) {
+// Finds and returns the indices of the source and destination folder if valid
+// Input: name of source folder, name of destination folder
+// Output: index of source folder, index of destination folder, error
+// Errors: Non-existent source folder, non-existent destination folder, moving a folder to itself
+func (f *driver) getFolderIndices(name string, dst string) (int, int, error) {
 	// Try to find corresponding folders and get their indices
 	start := -1
-	dest := 1
+	dest := -1
 	for i := range f.folders {
 		if f.folders[i].Name == name {
 			start = i
-		} else if f.folders[i].Name == dst {
+		} 
+		if f.folders[i].Name == dst {
 			dest = i
 		}
 	}
@@ -56,7 +65,10 @@ func (f* driver) getFolderIndices(name string, dst string) (int, int, error) {
 	return start, dest, nil
 }
 
-func (f* driver) updateFolderPaths(oldPath string, newPath string) {
+// Update the paths of folders that contain the old path with the new path
+// Input: original path of parent, new path of parent
+// Output: None
+func (f *driver) updateFolderPaths(oldPath string, newPath string) {
 	// For each child part of an input path, change their path to a new path
 	for i := range f.folders {
 		if strings.HasPrefix(f.folders[i].Paths, oldPath) {
