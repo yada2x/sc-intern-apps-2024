@@ -26,6 +26,13 @@ func (f *driver) GetFoldersByOrgID(orgID uuid.UUID) []Folder {
 
 }
 
+// Retrieves the a slice of the children of a folder specified by organisation ID and name
+// Assumes unique folder names within an organisations
+// If this assumption is false, if there are many folders with the same name, 
+// the first folder with the name will be selected.
+// Input: organisation ID, folder name
+// Output: slice of child folders, IO errors
+// Errors: Invalid folder
 func (f *driver) GetAllChildFolders(orgID uuid.UUID, name string) ([]Folder, error) {
 	folders := f.GetFoldersByOrgID(orgID)
 
@@ -46,7 +53,8 @@ func (f *driver) GetAllChildFolders(orgID uuid.UUID, name string) ([]Folder, err
 	// Find all children and append them to a result slice
 	children := []Folder{}
 	for _, folder := range folders {
-		if strings.HasPrefix(folder.Paths, path + ".") {
+		// Check if current folder has the parent path as a prefix of their own path
+		if strings.HasPrefix(folder.Paths, path+".") {
 			children = append(children, folder)
 		}
 	}
